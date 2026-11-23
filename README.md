@@ -46,3 +46,6 @@ see KiCAD
 
 
 ### As usual that tool comes with no warranty, it might blow up your airbags (same KLINE) or set your car on fire. Good luck ;-)
+
+
+*This project is licensed under the terms of the MIT license*
