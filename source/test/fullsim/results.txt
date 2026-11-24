@@ -1,0 +1,39 @@
+OK   01 every page loads, no JS errors, no missing files  5 pages clean, menu and credits correct
+OK   02 home: ECU id and battery voltage                  design='A120J6000F_' hw='EBC430' sw='LCFWDQ04K2K' date='03/02/25' volt='14.00'
+OK   03 home: ignition off -> timeout popup, then ignition on -> works timeout popup shown: True, after ignition on voltage: '14.00'
+OK   04 valves: each valve ON then OFF                    8 valves on/off, ECU and buttons agree
+OK   05 valves: second valve while another is on (e.g. DUMP on, then ISO) all sampled combinations switch correctly
+OK   06 valves: pump on/off, button follows               on ok: True, off ok: True
+OK   07 valves: relay ON/OFF buttons                      relay off reached ECU: True, back on: True
+OK   08 valves: page shows true state on open (pump already on) second tab shows pump ON: True
+OK   09 valves: leaving the page switches valves and pump off before: valves=11000000 pump=1; after going to Trouble Codes: all off
+OK   10 valves: closing the tab switches valves off       valve off after tab closed
+OK   11 valves: 40 fast clicks on one valve, module stays responsive slowest /status during clicks 0.00s, button shows OFF, ECU OFF
+OK   12 valves: click all 8 + pump quickly, then all off  all on reached: True, all off reached: True (ECU now 00000000)
+OK   13 DTCs: list shows every code with its text         rows=3 C0035 | Front left wheel speed sensor:Short circuit or circuit open | Invalid signal | C0232 | Brake system telltale voltage: high,low or open circuit | Invalid
+OK   14 DTCs: clear (confirmed) -> ECU cleared, page confirms and list empties confirm asked: True, ECU cleared: True, message: True, list empty: True, button usable: True
+OK   15 DTCs: clear cancelled -> nothing sent             clear sent: False, codes left: 1
+OK   16 DTCs: ECU refuses clear -> message, button usable refusal shown: True, button usable again: True
+OK   17 DTCs: clear with ignition off -> timeout popup, module fine timeout popup: True, module answers: True, button usable: True
+OK   18 DTCs: THE CAR-TEST FREEZE: corrupt reply + K-line chatter on clear /status during 10 s of chatter: 20/20 answered, slowest 0.00s; trouble codes page works after: True
+OK   19 DTCs: ECU says "busy" forever on clear            module answered throughout: True, gave up after the busy limit: True, home page works after: True
+OK   20 DTCs: no codes / 40 codes                         0 codes -> 0 rows; 40 codes -> 40 rows; JSON truncated: False
+OK   21 debug page: status, log, Test K-line              version 'v1.1 (Nov 23 2026)', Test K-line answered: True, TX/RX lines: True, sent=366
+OK   22 debug page: pause, clear, download                pause holds: True, resume grows: True, clear: True, download: lotusabs_log.txt
+OK   23 debug page: firmware upload (both files, wrong box refused) wrong box refused: True; result: Update done. Reloading the page ...
+OK   24 stall watchdog: frozen loop -> restarts itself, shows log from before pages dead while frozen: True, back by itself after 34s, earlier log shown: True
+OK   25 module restarts while a page is open              page reconnected by itself: True (old page left open after the restart)
+OK   26 two pages open at once (valves + trouble codes)   codes shown: True, valve on/off from the other tab: True/True, JS errors: []
+OK   27 dead K-line chip (no echo) -> popup and a clear log message timeout popup: True, log says "echo missing": True
+OK   28 noisy line: corrupt + noise + busy replies, values still shown after corrupt: '14.00', after noise: '14.00', after busy: '14.00', error popup: False
+OK   29 slow ECU (replies after 400 ms)                   id + voltage shown: True
+OK   30 valve page left open 3 min (polling + keep-alive) session still up: 1, K-line errors in log: 0, requests so far: 177
+OK   31 valves: quick double-tap = on then off            commands sent: ['30320701', '30320700'], valve now OFF, button OFF
+OK   32 sixth page when 5 are already open                retries shown: True, then clear message: True (stops, no endless reload)
+OK   33 safety lock: other services / unknown IO ids never reach the line frames on the line: ['81', '304901', '3E']; refused unknown IO: True
+OK   34 valve page: first command asks, cancel sends nothing after cancel: [], after OK: ['30120701', '30120700'], questions asked: 3 (2 cancelled + 1), warning shown: True
+OK   35 Test K-line, then straight to every other page    pages after the test: {'/': True, '/valves.html': True, '/dtc.html': True, '/log.html': True}, Test K-line again: True, open connections now: 1
+OK   36 warnings: Acknowledge hides them and they stay hidden home: shown True, hidden after Acknowledge True, still hidden after reload True; valves: shown True, hidden after Acknowledge + reload True
+OK   37 Disclaimer page: full text, no connection used, Acknowledge hides the warnings all sections shown: True, connections held by the page: 0, warnings hidden after Acknowledge: home True, valves True  (re-run after fixing the test's menu click)
+
+37 of 37 passed

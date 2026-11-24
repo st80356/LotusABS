@@ -1,0 +1,349 @@
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"> 
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lotus ABS Tool - Debug / Firmware Update</title>
+    <style>
+        /* no zoom with doubletouch */
+        * {
+          -ms-touch-action: manipulation;
+          touch-action: manipulation;
+        }
+        table
+        {
+            border-collapse: collapse; /* 'cellspacing' equivalent */
+        }
+        table td, table th
+        {
+            padding: 2; /* 'cellpadding' equivalent */
+        }
+        .header {
+          font-family: "Lucida Console", Courier, monospace;
+          color: black;
+          text-align: center;
+          font-size: 18px;
+        }   
+        .copyr {
+          font-family: "Lucida Console", Courier, monospace;
+          color: black;
+          text-align: right;
+          font-size: 9px;
+        }     
+        .left {
+            text-align: right;
+        }
+        .right {
+            text-align: left;
+        }
+   
+
+        #log {
+            font-family: "Lucida Console", Courier, monospace;
+            font-size: 11px;
+            height: 60vh;
+            overflow-y: scroll;
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            padding: 4px;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        .stat { font-family: "Lucida Console", Courier, monospace; font-size: 12px; }
+    </style>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/ebc430.js"></script>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+</head>
+
+<body>
+    <!-- NAVBAR START -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">
+                <table border=0>
+                    <tr>
+                        <td>
+                            <img src="img/brake.svg" height=50>
+                        </td>
+                        <td class=header>
+                            Lotus ABS Tool 
+                        </td>            
+                    </tr>
+                    <tr> 
+                        <td colspan=2 class=copyr>
+                            v1.0 &copy; 2021 by CyberNet<br>v1.1 &copy; 2026 Updates and Bug Fixes by Rstone72
+                        </td>
+                    </tr>
+                </table>
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarText">
+            <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="/">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="valves.html">Valve Control</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="dtc.html">Trouble Codes</a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="log.html">Debug / Firmware Update</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="disclaimer.html">Disclaimer</a>
+            </li>
+            </ul>
+        </div>
+    </nav>
+    <!-- NAVBAR END -->
+    <div class="card">
+        <div class="card-body">
+        <h5 class="card-title">Module</h5>
+        <div class="row stat">
+            <div class="col-6 col-sm-3">Firmware <b id="st_version">-</b></div>
+            <div class="col-6 col-sm-3">Uptime <b id="st_uptime">-</b></div>
+            <div class="col-6 col-sm-3">Free heap <b id="st_heap">-</b></div>
+            <div class="col-6 col-sm-3">Last reset <b id="st_reset">-</b></div>
+        </div>
+        <h5 class="card-title mt-3">K-line</h5>
+        <div class="row stat">
+            <div class="col-6 col-sm-3">Sent <b id="st_tx">-</b></div>
+            <div class="col-6 col-sm-3">Replies OK <b id="st_rx_ok">-</b></div>
+            <div class="col-6 col-sm-3">Timeouts <b id="st_timeouts">-</b></div>
+            <div class="col-6 col-sm-3">Checksum errors <b id="st_checksum_errors">-</b></div>
+            <div class="col-6 col-sm-3">Echo errors <b id="st_echo_errors">-</b></div>
+            <div class="col-6 col-sm-3">Resyncs <b id="st_resyncs">-</b></div>
+            <div class="col-6 col-sm-3">Resends <b id="st_retries">-</b></div>
+            <div class="col-6 col-sm-3">Fast inits <b id="st_fast_inits">-</b></div>
+        </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+        <h5 class="card-title">Firmware Update</h5>
+        <p class="mb-2">Running now: firmware <b id="st_version2">-</b>. Pick one or both files, then press Upload. No need to unplug the D1 mini.</p>
+        <div class="form-group mb-2">
+            <label for="f_fw" class="mb-0"><b>Firmware</b> (FIRMWARE.bin)</label>
+            <input type="file" class="form-control-file" id="f_fw" accept=".bin">
+        </div>
+        <div class="form-group mb-2">
+            <label for="f_fs" class="mb-0"><b>Web pages / filesystem</b> (LITTLEFS.bin)</label>
+            <input type="file" class="form-control-file" id="f_fs" accept=".bin">
+        </div>
+        <button type="button" class="btn btn-danger btn-sm" id="btn-upload" onClick="startUpdate();">Upload</button>
+        <div class="progress mt-2" style="height: 20px;"><div class="progress-bar" id="up_bar" role="progressbar" style="width: 0%">0%</div></div>
+        <div class="mt-1"><b id="up_msg">Choose a file.</b></div>
+        <small class="text-muted">With both files picked, LITTLEFS.bin goes first; the module restarts, this page waits for it to come back (reconnect to the LOTUS-ABS Wi-Fi if your phone drops it), then sends FIRMWARE.bin. Do it with no ABS test running and keep the phone or laptop close. If an upload fails, the old firmware keeps running: try again, or flash over USB with flash_v1.1.bat.</small>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+        <h5 class="card-title">Log</h5>
+        <div class="mb-2">
+            <button type="button" class="btn btn-primary btn-sm" onClick="testKline();">Test K-line</button>
+            <button type="button" class="btn btn-outline-dark btn-sm" id="btn-pause" onClick="togglePause();">Pause</button>
+            <button type="button" class="btn btn-outline-dark btn-sm" onClick="$('#log').text('');">Clear</button>
+            <button type="button" class="btn btn-outline-dark btn-sm" onClick="downloadLog();">Download</button>
+        </div>
+        <div id="log"></div>
+        <small class="text-muted">TX = sent to the ECU, RX = valid reply. "Echo missing" = nothing comes back on the K-line (L9637, wiring). Timeouts with a good echo = the ECU does not answer (ignition, cable pin 12).</small>
+        </div>
+    </div>
+
+    <script>
+        var log_pos = 0;
+        var paused = false;
+        var test_ws = null;
+
+        function appendLog(text)
+        {
+            var el = document.getElementById('log');
+            var atBottom = (el.scrollHeight - el.scrollTop - el.clientHeight) < 30;
+            el.appendChild(document.createTextNode(text));
+            // keep the page light: about 100 kB of text
+            if (el.textContent.length > 100000) el.textContent = el.textContent.slice(-80000);
+            if (atBottom) el.scrollTop = el.scrollHeight;
+        }
+
+        function pollLog()
+        {
+            if (paused) return;
+            $.ajax({ url: '/log.txt?from=' + log_pos, cache: false, dataType: 'text' }).done(function(body) {
+                var nl = body.indexOf('\n');
+                if (nl < 0) return;
+                var total = parseInt(body.substring(0, nl));
+                if (total < log_pos) appendLog('\n---- module restarted ----\n');
+                log_pos = total;
+                var text = body.substring(nl + 1);
+                if (text.length) appendLog(text);
+            });
+        }
+
+        function pollStatus()
+        {
+            $.ajax({ url: '/status', cache: false, dataType: 'json' }).done(function(s) {
+                $('#st_version, #st_version2').text('v' + s.version + (s.build ? ' (' + s.build + ')' : ''));
+                var u = s.uptime_s;
+                $('#st_uptime').text(Math.floor(u/3600) + 'h ' + Math.floor(u/60)%60 + 'm ' + u%60 + 's');
+                $('#st_heap').text(s.free_heap + ' B');
+                $('#st_reset').text(s.reset_reason);
+                ['tx','rx_ok','timeouts','checksum_errors','echo_errors','resyncs','retries','fast_inits'].forEach(function(k) {
+                    $('#st_' + k).text(s[k]);
+                });
+            });
+        }
+
+        function togglePause()
+        {
+            paused = !paused;
+            $('#btn-pause').text(paused ? 'Resume' : 'Pause');
+            if (!paused) pollLog();
+        }
+
+        function downloadLog()
+        {
+            var blob = new Blob([$('#log').text()], { type: 'text/plain' });
+            var a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'lotusabs_log.txt';
+            a.click();
+        }
+
+        // connect to the ECU and read the battery voltage once
+        function testKline()
+        {
+            appendLog('\n---- K-line test: StartCommunication + battery voltage ----\n');
+            if (test_ws && test_ws.readyState == 1)
+            {
+                test_ws.send(JSON.stringify({ sid: KWP_SID_STARTCOMMUNICATION }));
+                test_ws.send(JSON.stringify({ sid: KWP_SID_READDATABYLOCALID, record: 0x30 }));
+                return;
+            }
+            test_ws = ebc430_init();
+            test_ws.onopen = function() {
+                test_ws.send(JSON.stringify({ sid: KWP_SID_STARTCOMMUNICATION }));
+                test_ws.send(JSON.stringify({ sid: KWP_SID_READDATABYLOCALID, record: 0x30 }));
+            };
+            test_ws.onmessage = function(event) {
+                try {
+                    var d = JSON.parse(event.data);
+                    if (parseInt(d.sid) == KWP_SID_READDATABYLOCALID && d.value !== undefined)
+                        appendLog('---- ECU answered: battery ' + d.value + ' V ----\n');
+                    else if (parseInt(d.sid) == KWP_SID_ERR && parseInt(d.errcode) == 0xFF)
+                        appendLog('---- no answer from the ECU ----\n');
+                } catch (e) {}
+            };
+            // close after a while so the module drops the session (and the keep-alive)
+            setTimeout(function() { if (test_ws) { test_ws.close(); test_ws = null; } }, 15000);
+        }
+
+
+        // ---- Firmware Update: POST to /update (ESP8266HTTPUpdateServer: field "firmware" or "filesystem") ----
+        var FS_MAX = 1024 * 1024;   // LittleFS partition, 1 MB
+        var up_busy = false;
+
+        function upMsg(t, cls) { $('#up_msg').text(t).attr('class', cls || ''); }
+        function upBar(p) { $('#up_bar').css('width', p + '%').text(p + '%'); }
+
+        // first byte: ESP8266 app images start with 0xE9, a LittleFS image does not
+        function checkFile(file, kind, cb)
+        {
+            if (!file) return cb(null);
+            var r = new FileReader();
+            r.onload = function() {
+                var b0 = new Uint8Array(r.result)[0];
+                if (kind == 'firmware' && b0 != 0xE9) return cb(file.name + ' is not a firmware image (wrong file in the Firmware box?)');
+                if (kind == 'filesystem' && b0 == 0xE9) return cb(file.name + ' is a firmware image, not LITTLEFS.bin (wrong box?)');
+                if (kind == 'filesystem' && file.size > FS_MAX) return cb(file.name + ' is larger than the 1 MB filesystem');
+                cb(null);
+            };
+            r.onerror = function() { cb('cannot read ' + file.name); };
+            r.readAsArrayBuffer(file.slice(0, 4));
+        }
+
+        function uploadOne(file, kind, label, done)
+        {
+            var fd = new FormData();
+            fd.append(kind, file, file.name);
+            var x = new XMLHttpRequest();
+            x.open('POST', '/update');
+            x.upload.onprogress = function(e) { if (e.lengthComputable) upBar(Math.round(e.loaded * 100 / e.total)); };
+            x.onload = function() {
+                if (x.status == 200 && x.responseText.indexOf('Success') >= 0) done(null);
+                else done(label + ' failed: ' + x.responseText.replace(/<[^>]*>/g, ' ').trim().substring(0, 120));
+            };
+            x.onerror = function() { done(label + ' upload lost the connection'); };
+            upBar(0);
+            upMsg('Uploading ' + label + ' (' + file.name + ') ...');
+            x.send(fd);
+        }
+
+        // after a restart: wait until /status answers again (up to 90 s)
+        function waitForModule(done)
+        {
+            var t0 = Date.now();
+            upMsg('Module restarting, waiting for it to come back ...');
+            function poll() {
+                $.ajax({ url: '/status', cache: false, dataType: 'json', timeout: 2000 })
+                 .done(function(s) { $('#st_version, #st_version2').text('v' + s.version); done(null); })
+                 .fail(function() {
+                     if (Date.now() - t0 > 90000) done('Module did not come back after 90 s. Reconnect to the LOTUS-ABS Wi-Fi and reload this page.');
+                     else setTimeout(poll, 2000);
+                 });
+            }
+            setTimeout(poll, 4000);
+        }
+
+        function finishUpdate(err)
+        {
+            up_busy = false;
+            $('#btn-upload').prop('disabled', false);
+            if (err) upMsg(err, 'text-danger');
+            else { upBar(100); upMsg('Update done. Reloading the page ...', 'text-success'); setTimeout(function() { location.reload(true); }, 2000); }
+        }
+
+        function startUpdate()
+        {
+            if (up_busy) return;
+            var fw = $('#f_fw')[0].files[0], fs = $('#f_fs')[0].files[0];
+            if (!fw && !fs) return upMsg('Pick FIRMWARE.bin and/or LITTLEFS.bin first.', 'text-danger');
+            checkFile(fw, 'firmware', function(e1) {
+                if (e1) return upMsg(e1, 'text-danger');
+                checkFile(fs, 'filesystem', function(e2) {
+                    if (e2) return upMsg(e2, 'text-danger');
+                    var what = (fs ? 'LITTLEFS.bin' : '') + (fs && fw ? ' then ' : '') + (fw ? 'FIRMWARE.bin' : '');
+                    if (!confirm('Upload ' + what + '? The module restarts after each file.')) return;
+                    up_busy = true;
+                    $('#btn-upload').prop('disabled', true);
+                    var steps = [];
+                    if (fs) steps.push([fs, 'filesystem', 'LITTLEFS.bin']);
+                    if (fw) steps.push([fw, 'firmware', 'FIRMWARE.bin']);
+                    (function next(i) {
+                        if (i >= steps.length) return finishUpdate(null);
+                        uploadOne(steps[i][0], steps[i][1], steps[i][2], function(err) {
+                            if (err) return finishUpdate(err);
+                            waitForModule(function(err2) { if (err2) return finishUpdate(err2); next(i + 1); });
+                        });
+                    })(0);
+                });
+            });
+        }
+
+        // leaving the page: close the test connection now, so it does not hold one of the 5 slots
+        window.addEventListener('pagehide', function() { if (test_ws) { try { test_ws.close(); } catch (e) {} test_ws = null; } });
+
+        $(document).ready(function() {
+            pollLog();
+            pollStatus();
+            window.setInterval(function() { if (!up_busy) pollLog(); }, 1000);
+            window.setInterval(function() { if (!up_busy) pollStatus(); }, 3000);
+        });
+    </script>
+</body>
+</html>
