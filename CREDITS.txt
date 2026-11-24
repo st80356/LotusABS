@@ -1,0 +1,16 @@
+LotusABS firmware - credits
+
+Lotus ABS ECU Tool v1.0
+  (c) 2021 by CyberNet - original author: KWP2000/K-line code, EBC430 support,
+  web interface. Released under the MIT licence (see LICENSE).
+
+v1.1 (c) 2026 Updates and Bug Fixes by Rstone72:
+  hardware-UART K-line, memory leak and stale-command fixes, reply checks,
+  Debug / Firmware Update page, valve page fixes, stall watchdog, test suites.
+  See FIRMWARE_v1.1_CHANGES.txt.
+
+November 2026: the original author agreed to the changes, will merge them
+upstream and set the licence to MIT.
+
+Third-party parts: Bootstrap and jQuery (MIT licence), ElegantOTA, TaskScheduler,
+ArduinoJson, WebSockets, PubSubClient and the ESP8266 Arduino core under their own licences.

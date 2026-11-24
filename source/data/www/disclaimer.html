@@ -1,0 +1,140 @@
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"> 
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lotus ABS Tool - Disclaimer</title>
+    <style>
+        /* no zoom with doubletouch */
+        * {
+          -ms-touch-action: manipulation;
+          touch-action: manipulation;
+        }
+        table
+        {
+            border-collapse: collapse; /* 'cellspacing' equivalent */
+        }
+        table td, table th
+        {
+            padding: 2; /* 'cellpadding' equivalent */
+        }
+        .header {
+          font-family: "Lucida Console", Courier, monospace;
+          color: black;
+          text-align: center;
+          font-size: 18px;
+        }   
+        .copyr {
+          font-family: "Lucida Console", Courier, monospace;
+          color: black;
+          text-align: right;
+          font-size: 9px;
+        }     
+        .left {
+            text-align: right;
+        }
+        .right {
+            text-align: left;
+        }
+   
+
+        .disc h5 { margin-top: 1rem; }
+        .disc p, .disc li { font-size: 14px; }
+    </style>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/ebc430.js"></script>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+</head>
+
+<body>
+    <!-- NAVBAR START -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">
+                <table border=0>
+                    <tr>
+                        <td>
+                            <img src="img/brake.svg" height=50>
+                        </td>
+                        <td class=header>
+                            Lotus ABS Tool 
+                        </td>            
+                    </tr>
+                    <tr> 
+                        <td colspan=2 class=copyr>
+                            v1.0 &copy; 2021 by CyberNet<br>v1.1 &copy; 2026 Updates and Bug Fixes by Rstone72
+                        </td>
+                    </tr>
+                </table>
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarText">
+            <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="/">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="valves.html">Valve Control</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="dtc.html">Trouble Codes</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="log.html">Debug / Firmware Update</a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="disclaimer.html">Disclaimer</a>
+            </li>
+            </ul>
+        </div>
+    </nav>
+    <!-- NAVBAR END -->
+    <div class="card">
+        <div class="card-body disc">
+        <h4 class="card-title text-danger">WARNING AND DISCLAIMER</h4>
+        <p>Read this before connecting the tool to a vehicle.</p>
+        <p class="font-weight-bold text-danger">BY USING THIS TOOL YOU ACCEPT THE RISKS DESCRIBED BELOW AND THIS DISCLAIMER IN FULL. If you do not accept them, do not use the tool.</p>
+        <h5>WHAT THIS IS</h5>
+        <p>LotusABS is a hobby diagnostic and test tool for the EBC430 ABS unit fitted to some Lotus cars. It is not a professional or certified tool. It is not made, approved or supported by Lotus Cars, by the maker of the ABS unit, or by any vehicle or parts manufacturer. Names of vehicles and parts are used only to describe what the tool is for.</p>
+        <h5>THE RISKS</h5>
+        <p>Using this tool can damage any part of the vehicle and can cause serious injury or death. In particular:</p>
+        <ul>
+        <li>OTHER CONTROL UNITS, INCLUDING THE AIRBAGS. The diagnostic line this tool connects to is shared with other control units, including the airbag (SRS) system. The firmware only ever addresses the ABS unit, but any device on a shared line can disturb the others: warning lights (including the airbag light) and stored fault codes in other units are possible. An unintended airbag or pretensioner deployment is very unlikely but cannot be completely ruled out, and a deploying airbag can cause serious injury or death.</li>
+        <li>BRAKES. The Valve Control page opens and closes ABS valves and runs the ABS pump. This changes how the brakes work while it is active, can let air into the brake system, can leave the brakes weak or not working, and can damage the pump or valves if they are left on.</li>
+        <li>FAULT CODES. Clearing trouble codes erases information a workshop may need, and does not fix the fault. A cleared code comes back if the fault is still there.</li>
+        <li>ELECTRICAL. Wrong wiring, a short circuit or a faulty board can damage the vehicle&#x27;s wiring, fuses, control units or battery, or the tool itself. Leaving it connected can flatten the battery.</li>
+        <li>OTHER. Warning lights, a failed inspection, or a voided warranty can result from using it.</li>
+        </ul>
+        <h5>RULES FOR USE</h5>
+        <ol>
+        <li>Use it only with the vehicle parked on level ground, engine off, parking brake on, wheels chocked, gear selected. Never while driving, never on a public road.</li>
+        <li>Connect and disconnect the tool only with the ignition OFF.</li>
+        <li>While the tool is connected, nobody sits in the vehicle, and keep your head and body out of the path of the airbags (steering wheel, dashboard). Reach in from the side.</li>
+        <li>Do not leave valves or the pump switched on. Close the Valve Control page when you are done.</li>
+        <li>Disconnect the tool before driving.</li>
+        <li>After using Valve Control or clearing codes: check that the brake pedal is firm, that the ABS, brake and airbag warning lights go out, then test the brakes at walking pace in a safe place. If anything is not right, do not drive: have the brakes checked and bled by a qualified mechanic.</li>
+        <li>If an airbag warning light comes on, have the airbag system checked by a qualified mechanic.</li>
+        <li>If you are not sure what you are doing, do not use the tool. Have the vehicle diagnosed by a qualified workshop.</li>
+        </ol>
+        <h5>NO WARRANTY</h5>
+        <p>The tool, its firmware, software, design files and documentation are provided &quot;AS IS&quot;, without warranty of any kind, express or implied, including but not limited to warranties of merchantability, fitness for a particular purpose, accuracy and non-infringement.</p>
+        <h5>LIMITATION OF LIABILITY</h5>
+        <p>To the fullest extent permitted by law, the authors, contributors, designers and anyone who builds, supplies or gives away the tool are not liable for any damage, loss, injury or death, direct or indirect, incidental, special or consequential, including damage to vehicles, airbag deployment, brake failure, loss of use or repair costs, arising from building, installing or using the tool, the firmware or the documentation, or from being unable to use them, even if advised of the possibility of such damage.</p>
+        <h5>YOUR RESPONSIBILITY</h5>
+        <p>By using the tool you accept these risks and this disclaimer, you take full responsibility for its use and its results, and you agree not to hold the authors, contributors or suppliers responsible for any claim arising from that use. If you do not accept this, do not use the tool.</p>
+        <p>Firmware: v1.0 (c) 2021 by CyberNet, v1.1 (c) 2026 Updates and Bug Fixes by Rstone72, MIT licence (see firmware\source\LICENSE).</p>
+        <div class="mt-3"><button type="button" class="btn btn-danger" onClick="ackAll();">Acknowledge</button> <span id="ack_done" class="text-success" style="display:none;">Acknowledged: the warning boxes stay hidden in this browser.</span></div>
+        </div>
+    </div>
+    <script>
+        function ackAll()
+        {
+            try { localStorage.setItem('ack_home', '1'); localStorage.setItem('ack_valves', '1'); } catch (e) {}
+            $('#ack_done').show();
+        }
+    </script>
+</body>
+</html>

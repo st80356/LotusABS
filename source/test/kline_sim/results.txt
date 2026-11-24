@@ -1,0 +1,42 @@
+=== v1.0 ===
+1 connect + ECU id + voltage                 OK    connect=1 id=1 volt=1 err=0 timeouts=0 id='A120J6000F_'
+2 read DTCs + clear                          OK    dtc replies=1 timeouts=0
+3 valve read + pump on/off                   OK    io replies=3 pump=0 timeouts=0
+4 one corrupt reply                          FAIL  value shown=0 error popup(timeout)=1
+5 noise byte before reply                    FAIL  value shown=0 timeout=1
+6 slow reply (gap inside frame)              OK    values shown=2 (2 asked) timeouts=0
+7 ECU busy (response pending)                FAIL  value shown=0 error popup=1 timeouts=0
+8 stray byte while idle                      FAIL  value shown=1 timeouts=1
+9 three quick valve clicks all sent          OK    ECU requests seen=3
+10 old pump click after ignition on          FAIL  pump switched on by itself after ignition on: YES
+11 dead K-line chip                          OK    timeouts shown=3, log names the echo problem: no
+12 2 h on valve page, heap                   FAIL  heap lost: 23096 bytes in 2 h (11.3 KB/h)
+13 30 min ignition off, heap                 FAIL  heap lost: 201320 bytes in 30 min, error popups 719
+14 still works afterwards (3 polls)          OK    connect=3 value=12
+15 pump OFF clicked during a lost reply      OK    pump was on=1, pump after OFF click: off
+16 ECU replies from another address          OK    values shown=2 (2 asked)
+firmware heap still held at end: 225000 bytes (3709 blocks)
+
+(v1.0 stops at test 16; tests 17-18 were added later)
+
+=== v1.1 ===
+1 connect + ECU id + voltage                 OK    connect=1 id=1 volt=1 err=0 timeouts=0 id='A120J6000F_'
+2 read DTCs + clear                          OK    dtc replies=1 timeouts=0
+3 valve read + pump on/off                   OK    io replies=3 pump=0 timeouts=0
+4 one corrupt reply                          OK    value shown=1 error popup(timeout)=0
+5 noise byte before reply                    OK    value shown=1 timeout=0
+6 slow reply (gap inside frame)              OK    values shown=2 (2 asked) timeouts=0
+7 ECU busy (response pending)                OK    value shown=1 error popup=0 timeouts=0
+8 stray byte while idle                      OK    value shown=1 timeouts=0
+9 three quick valve clicks all sent          OK    ECU requests seen=3
+10 old pump click after ignition on          OK    pump switched on by itself after ignition on: no
+11 dead K-line chip                          OK    timeouts shown=1, log names the echo problem: yes
+12 2 h on valve page, heap                   OK    heap lost: 0 bytes in 2 h (0.0 KB/h)
+13 30 min ignition off, heap                 OK    heap lost: 272 bytes in 30 min, error popups 360
+14 still works afterwards (3 polls)          OK    connect=2 value=2
+  live size 736 x 1
+15 pump OFF clicked during a lost reply      OK    pump was on=1, pump after OFF click: off
+16 ECU replies from another address          OK    values shown=2 (2 asked)
+17 corrupt reply + K-line chatter 60 s       OK    process() came back, longest blocked time < 5 s
+18 ECU 'response pending' forever            OK    gave up and answered the page: yes, next request works: yes
+firmware heap still held at end: 0 bytes (1 blocks)

@@ -1,0 +1,125 @@
+Lotus EBC430 ABS firmware v1.1 - changes from the original (v1.0) firmware
+===================================================================
+Flash over USB with flash_v1.1.bat (v1.1\FIRMWARE.bin @ 0x000000, v1.1\LITTLEFS.bin @ 0x300000).
+Both files must be flashed - the web pages changed too.
+To go back to the original firmware, run flash_v1.0.bat (files in v1.0\).
+
+Status: builds cleanly. NOT fully tested, treat as such.
+Simulator: test\kline_sim runs the real K-line code of v1.0 and v1.1 against a simulated
+EBC430 (16 scenarios, results.txt). v1.1 passes all 16, v1.0 fails 8 (see results.txt).
+The simulator cannot test the real ECU, the real L9637 or real radio/timing behaviour.
+
+K-line / KWP2000 (src\kwp.cpp)
+ - Runs on the hardware UART instead of SoftwareSerial on the same pins (GPIO1/GPIO3).
+   Exact 10400 baud, not disturbed by Wi-Fi interrupts.
+ - Memory leak fixed: every ECU reply used to leak its data buffer (module froze or reset
+   after a long session).
+ - Requests are sent in the order they were made (FIFO). A request that is already queued
+   is not queued twice, and nothing leaks when the queue is full.
+ - When the ECU does not answer a connect attempt (ignition off, cable out), queued requests
+   are cancelled instead of being sent later (a pump/valve click made with the ignition off
+   no longer fires when it comes on). OFF commands are never cancelled. A single lost reply
+   inside a running session cancels nothing.
+ - Receiver: skips noise, resyncs after a 100 ms gap inside a reply, supports the long-frame
+   length byte. Like v1.0 it accepts replies whatever address they come from (only logged).
+ - Corrupt reply (bad checksum): request is resent once; if it fails again the error shows
+   straight away (used to sit 2 s and then show a timeout).
+ - ECU "busy / response pending" (7F xx 78) now waits up to 5 s instead of failing.
+ - The K-line echo of every sent frame is checked: "echo missing" in the log points at the
+   L9637 or the board, timeouts with a good echo point at the ECU/cable/ignition.
+ - Keep-alive (TesterPresent) every 2 s while a web page is open, so the ECU session does not
+   drop between requests. Turns itself off for good if the ECU rejects it. Stops when no
+   web page is connected, so the ECU still ends the session (and any valve/pump test)
+   on its own after you close the page.
+
+ECU data (src\ebc430.cpp)
+ - Every reply is length-checked before it is read (no reading past the end of short replies).
+ - ECU identification strings always terminated; JSON buffer big enough for all four fields.
+ - Wheel speed decoding fixed (wrong byte, integer division). Not shown in the UI yet.
+ - DTC count checked against the bytes actually received.
+
+Debug over Wi-Fi (new)
+ - New page "Debug / Firmware Update" (http://192.168.1.1/log.html, in the menu on every page):
+     * live log of every frame sent/received (hex), checksum errors, resyncs, timeouts,
+       echo errors, fast inits, cancelled requests
+     * module status: firmware version, uptime, free memory, last reset reason
+     * K-line counters (sent, replies OK, timeouts, checksum/echo errors, resends ...)
+     * Test K-line button: connects to the ECU and reads the battery voltage once
+     * Pause / Clear / Download (saves lotusabs_log.txt)
+ - Raw endpoints: /log.txt?from=N (log text) and /status (JSON).
+ - Firmware Update on the same page: one file box for FIRMWARE.bin and one for LITTLEFS.bin.
+   Pick one or both and press Upload; with both, LITTLEFS.bin goes first, the page waits for
+   the module to restart, then sends FIRMWARE.bin. A file in the wrong box is refused.
+   Progress bar and result shown. The plain ElegantOTA page (/update) still works as a backup.
+   USB flashing: flash_v1.1.bat.
+ - Credits on every page: v1.0 (c) 2021 by CyberNet, v1.1 (c) 2026 Updates and
+   Bug Fixes by Rstone72. Same notice at the top of each source file.
+ - Log is kept in RAM (last ~6 KB); it is lost on power-off.
+ - MQTT logging (off by default, log.cpp) now keeps retrying the connection instead of giving
+   up after one failed attempt at power-up, and no longer uses a freed string for the server.
+
+Cleanup
+ - platformio.ini: removed 3 unused libraries (ESP Async WebServer, ESPAsyncTCP,
+   AsyncElegantOTA), pinned platform and library versions, upload_speed 2000000 -> 460800.
+ - ArduinoJson 6.21 compatible (the original only built on 6.18).
+ - The two startup error messages (access point / LittleFS) now go to the debug log instead
+   of the K-line.
+ - Web pages show v1.1.
+
+Not changed: Wi-Fi name/password (LOTUS-ABS, open), OTA page, web UI behaviour, pin use,
+flash layout, the WIFI_DEBUG block.
+
+Fixes after the first car test (build Nov 23 2026)
+ - Module could freeze (Wi-Fi up, pages dead, needed power-off) when a reply was corrupt and the
+   K-line kept chattering: the "wait for the line to go quiet" loop had no time limit. Now max
+   200 ms. Reproduced in the simulator (old v1.1 stuck, fixed build passes).
+ - "Response pending" (7F xx 78) from the ECU could extend the wait forever; now max 6 (30 s).
+ - Stall watchdog: if the main loop ever stops for 30 s the module restarts by itself. After such a
+   restart the Debug page shows the log lines from before the freeze.
+ - Valves and pump switched on from the Valve Control page are switched off when that page is
+   closed or left (they used to stay on while you were on another page).
+ - Clear DTCs asks for confirmation, then shows "Trouble codes cleared" and re-reads the codes.
+ - Debug page shows the build date next to the version.
+
+Found by the full-stack test (real firmware + simulated ECU + real browser, 32 scenarios)
+ - Valve page (bug from v1.0): turning a valve ON while a valve "above" it was on (e.g. LF DUMP on,
+   then LF ISO) sent OFF instead. 13 of 22 tested combinations were wrong. Fixed.
+ - Valve page: a quick double-tap sent ON twice instead of ON then OFF (the page only learned the
+   state from the read-back). Fixed: the page records the new state when you tap. Same for the pump.
+ - Pages now notice when the module restarts or the phone drops the Wi-Fi: red banner
+   "Connection to the ABS tool lost ... Reconnecting", and the page reloads by itself when the module
+   is back. With 5 pages already open (module limit) the 6th says so instead of hanging.
+ - Reply buffers sized by ArduinoJson itself (were fixed numbers): 40 trouble codes shown fine.
+ - "Reply addressed ... from ..." note logged once instead of on every reply (it filled the log).
+
+Safety (the K-line is shared with other units, including the airbag ECU)
+ - Safety lock in the K-line code: only physically addressed frames to the ABS ECU, with one of
+   7 known services (connect, ID, read data, read codes, clear codes, valve/pump control,
+   keep-alive), can ever be sent. Anything else is blocked and logged. Never broadcast.
+ - Valve/pump commands only for the known IDs (pump, relay, 8 valves; lamp/all-valves read).
+ - Warning on the Home and Valve Control pages; the valve page asks once before the first
+   valve/pump/relay command. See DISCLAIMER.txt.
+ - The warnings end "By using this tool you accept these risks." and have an Acknowledge
+   button; once pressed, that warning stays hidden in that browser.
+
+Page connections (after "Could not connect to the ABS tool" on the car)
+ - The module pings every open page every 15 s and drops pages that stop answering (phone
+   asleep, out of range, tab killed), so their connection slots (5 max) free up again.
+ - A page that cannot connect tries 5 times (every 5 s) before showing the message.
+ - The Debug page closes its Test K-line connection when you leave it.
+ - Every page connect/disconnect is in the debug log with the number open and the free memory.
+ - A new session always starts with the K-line fast-init wake-up (the first reconnect after
+   an ignition cycle used to time out once and show the timeout popup).
+
+Disclaimer page and more line robustness
+ - New "Disclaimer" page in the menu (disclaimer.html): the full DISCLAIMER.txt, with an
+   Acknowledge button that hides the warning boxes. It uses no connection slot.
+ - Home warning shortened; the airbag risk is stated realistically (warning lights and fault
+   codes possible, deployment very unlikely but not ruled out). Same in DISCLAIMER.txt.
+ - The echo of each sent frame is read even if a Wi-Fi task held the module up past the 10 ms
+   wait (a good frame could be counted as lost and time out).
+ - Stray bytes on a noisy line are logged once a second instead of one line per byte.
+ - LotusABS is a hobby diagnostic and test tool for the EBC430 ABS unit fitted to some Lotus cars.
+   It is not a professional or certified tool. It is not made, approved or supported by Lotus Cars,
+   by the maker of the ABS unit, or by any vehicle or parts manufacturer. Names of vehicles and parts
+   are used only to describe what the tool is for.

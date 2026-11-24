@@ -1,0 +1,64 @@
+LotusABS - WARNING AND DISCLAIMER
+Read this before connecting the tool to a vehicle.
+BY USING THIS TOOL YOU ACCEPT THE RISKS DESCRIBED BELOW AND THIS DISCLAIMER IN FULL.
+If you do not accept them, do not use the tool.
+
+WHAT THIS IS
+LotusABS is a hobby diagnostic and test tool for the EBC430 ABS unit fitted to some Lotus cars.
+It is not a professional or certified tool. It is not made, approved or supported by Lotus Cars,
+by the maker of the ABS unit, or by any vehicle or parts manufacturer. Names of vehicles and parts
+are used only to describe what the tool is for.
+
+THE RISKS
+Using this tool can damage any part of the vehicle and can cause serious injury or death.
+In particular:
+
+ * OTHER CONTROL UNITS, INCLUDING THE AIRBAGS. The diagnostic line this tool connects to is
+   shared with other control units, including the airbag (SRS) system. The firmware only ever
+   addresses the ABS unit, but any device on a shared line can disturb the others: warning
+   lights (including the airbag light) and stored fault codes in other units are possible. An
+   unintended airbag or pretensioner deployment is very unlikely but cannot be completely ruled
+   out, and a deploying airbag can cause serious injury or death.
+ * BRAKES. The Valve Control page opens and closes ABS valves and runs the ABS pump. This changes
+   how the brakes work while it is active, can let air into the brake system, can leave the
+   brakes weak or not working, and can damage the pump or valves if they are left on.
+ * FAULT CODES. Clearing trouble codes erases information a workshop may need, and does not fix
+   the fault. A cleared code comes back if the fault is still there.
+ * ELECTRICAL. Wrong wiring, a short circuit or a faulty board can damage the vehicle's wiring,
+   fuses, control units or battery, or the tool itself. Leaving it connected can flatten the battery.
+ * OTHER. Warning lights, a failed inspection, or a voided warranty can result from using it.
+
+RULES FOR USE
+ 1. Use it only with the vehicle parked on level ground, engine off, parking brake on, wheels
+    chocked, gear selected. Never while driving, never on a public road.
+ 2. Connect and disconnect the tool only with the ignition OFF.
+ 3. While the tool is connected, nobody sits in the vehicle, and keep your head and body out of
+    the path of the airbags (steering wheel, dashboard). Reach in from the side.
+ 4. Do not leave valves or the pump switched on. Close the Valve Control page when you are done.
+ 5. Disconnect the tool before driving.
+ 6. After using Valve Control or clearing codes: check that the brake pedal is firm, that the ABS,
+    brake and airbag warning lights go out, then test the brakes at walking pace in a safe place.
+    If anything is not right, do not drive: have the brakes checked and bled by a qualified mechanic.
+ 7. If an airbag warning light comes on, have the airbag system checked by a qualified mechanic.
+ 8. If you are not sure what you are doing, do not use the tool. Have the vehicle diagnosed by
+    a qualified workshop.
+
+NO WARRANTY
+The tool, its firmware, software, design files and documentation are provided "AS IS", without
+warranty of any kind, express or implied, including but not limited to warranties of
+merchantability, fitness for a particular purpose, accuracy and non-infringement.
+
+LIMITATION OF LIABILITY
+To the fullest extent permitted by law, the authors, contributors, designers and anyone who
+builds, supplies or gives away the tool are not liable for any damage, loss, injury or death,
+direct or indirect, incidental, special or consequential, including damage to vehicles, airbag
+deployment, brake failure, loss of use or repair costs, arising from building, installing or
+using the tool, the firmware or the documentation, or from being unable to use them, even if
+advised of the possibility of such damage.
+
+YOUR RESPONSIBILITY
+By using the tool you accept these risks and this disclaimer, you take full responsibility for
+its use and its results, and you agree not to hold the authors, contributors or suppliers
+responsible for any claim arising from that use. If you do not accept this, do not use the tool.
+
+Firmware: v1.0 (c) 2021 by CyberNet, v1.1 (c) 2026 Updates and Bug Fixes by Rstone72, MIT licence (see firmware\source\LICENSE).
